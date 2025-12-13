@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    protected $fillable = ['quiz_id', 'content'];
+    // Dodajemy 'answer' do listy dozwolonych pól
+    protected $fillable = ['quiz_id', 'content', 'answer'];
 
-    // Relacja: Pytanie należy do quizu
     public function quiz()
     {
         return $this->belongsTo(Quiz::class);
