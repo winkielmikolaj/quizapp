@@ -54,4 +54,23 @@
 
     <br>
     <a href="/quizzes">Wróć do listy quizów</a>
+
+    <hr style="margin: 30px 0;">
+
+    <h3>Ostatnie wyniki tego quizu:</h3>
+
+    @if($history->isEmpty())
+        <p>Brak wyników. Bądź pierwszy!</p>
+    @else
+        <ul>
+            @foreach($history as $result)
+                <li>
+                    {{-- Formatujemy datę (Dzień.Miesiąc Godzina:Minuta) --}}
+                    <small>{{ $result->created_at->format('d.m.Y H:i') }}</small>
+                    –
+                    <strong>Wynik: {{ $result->score }} / {{ $result->total_questions }}</strong>
+                </li>
+            @endforeach
+        </ul>
+    @endif
 @endsection

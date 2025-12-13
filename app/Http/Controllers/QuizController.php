@@ -4,57 +4,70 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Quiz;
+use App\Models\Result; // Ważne: import modelu wyników
 
 class QuizController extends Controller
 {
-    // Lista quizów
+    // Metoda wyświetlająca listę quizów
     public function index()
     {
+        // Pobieramy wszystkie quizy z bazy
         $quizzes = Quiz::all();
+
         return view('quizzes', ['quizzes' => $quizzes]);
     }
 
-    // Pojedynczy quiz
+    // Metoda wyświetlająca jeden konkretny quiz i jego pytania
     public function show($id)
     {
+        // Znajdź quiz o danym ID razem z pytaniami, lub zwróć błąd 404
         $quiz = Quiz::with('questions')->findOrFail($id);
-        return view('quiz', ['quiz' => $quiz]);
+
+        $history = Result::where('quiz_id', $id)->latest()->take(5)->get();
+
+        return view('quiz', ['quiz' => $quiz, 'history' => $history]);
     }
 
-    // Obsługa formularza (Walidacja)
+    // Metoda obsługująca przesłanie formularza z odpowiedziami
     public function submit(Request $request, $id)
     {
-        // 1. Walidacja (tak jak wcześniej)
+        // 1. Walidacja danych wejściowych
         $data = $request->validate([
-            // Pierwsza tablica: reguły
-            'answers'   => 'required|array',
-            'answers.*' => 'required|numeric',
+            'answers'   => 'required|array',     // Musi być tablicą
+            'answers.*' => 'required|numeric',   // Każda odpowiedź musi być liczbą
         ], [
-            // Druga tablica: Twoje tłumaczenia (To tutaj naprawiamy ten komunikat!)
+            // Niestandardowe komunikaty błędów
             'answers.*.required' => 'To pole jest wymagane.',
             'answers.*.numeric'  => 'Musisz wpisać liczbę (nie tekst).',
         ]);
 
-        // 2. Pobieramy quiz z pytaniami z bazy
+        // 2. Pobieramy quiz i pytania z bazy, aby sprawdzić poprawność
         $quiz = Quiz::with('questions')->findOrFail($id);
 
-        $score = 0; // Licznik punktów
-        $total = $quiz->questions->count(); // Liczba pytań
+        $score = 0; // Licznik punktów użytkownika
+        $total = $quiz->questions->count(); // Maksymalna liczba punktów do zdobycia
 
-        // 3. Pętla sprawdzająca odpowiedzi
+        // Pętla sprawdzająca każdą odpowiedź
         foreach ($quiz->questions as $question) {
-            // Pobieramy odpowiedź użytkownika dla danego pytania
-            // (int) wymusza traktowanie wpisu jako liczby (np. "4" staje się 4)
-            $userAnswer = (int) $data['answers'][$question->id];
+            // Pobieramy odpowiedź użytkownika (jeśli brak, przyjmujemy 0)
+            // Rzutowanie na (int) usuwa ewentualne problemy z typami
+            $userAnswer = (int) ($data['answers'][$question->id] ?? 0);
 
             // Porównujemy z poprawną odpowiedzią z bazy
             if ($userAnswer === $question->answer) {
-                $score++; // Punkt w górę!
+                $score++;
             }
         }
 
-        // 4. Budujemy komunikat
-        $message = "Twój wynik to: $score / $total punktów.";
+        // 3. Zapisujemy wynik do bazy danych
+        Result::create([
+            'quiz_id' => $quiz->id,
+            'score' => $score,
+            'total_questions' => $total,
+        ]);
+
+        // 4. Przygotowujemy komunikat dla użytkownika
+        $message = "Twój wynik ($score / $total) został zapisany w bazie!";
 
         if ($score === $total) {
             $message .= " Brawo! Wszystko dobrze!";
@@ -62,7 +75,7 @@ class QuizController extends Controller
             $message .= " Spróbuj jeszcze raz, żeby poprawić wynik.";
         }
 
-        // 5. Zwracamy wynik
+        // 5. Przekierowujemy z powrotem z komunikatem sukcesu
         return back()->with('success', $message);
     }
 }
