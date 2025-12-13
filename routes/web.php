@@ -13,3 +13,7 @@ Route::get('/quizzes', [QuizController::class, 'index']);
 
 //metoda show z controllera, ktora wyswietla quiz na podstawie id w linku
 Route::get('/quizzes/{id}', [QuizController::class, 'show']);
+
+
+// przesylanie rozwiazania (POST)
+Route::post('/quizzes/{id}', [QuizController::class, 'submit']);
