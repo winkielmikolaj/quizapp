@@ -2,47 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Quiz; //import modelu z quizami
 
 class QuizController extends Controller
 {
-    // stored info
-    private $quizzes = [
-        1 => [
-            'id' => 1,
-            'title' => 'Matematyka: Dodawanie',
-            'questions' => [
-                'Ile to jest 2 + 2?',
-                'Ile to jest 15 + 25?',
-                'Jaki jest wynik 100 + 0?'
-            ]
-        ],
-        2 => [
-            'id' => 2,
-            'title' => 'Matematyka: Mnożenie',
-            'questions' => [
-                'Ile to jest 3 * 3?',
-                'Ile to jest 7 * 8?',
-                'Jaki jest wynik 10 * 10?'
-            ]
-        ]
-    ];
-
-    // lista quizow
     public function index()
     {
-        return view('quizzes', ['quizzes' => $this->quizzes]);
+        // pobieranie quizow do widoku
+        $quizzes = Quiz::all();
+
+        return view('quizzes', ['quizzes' => $quizzes]);
     }
 
-    // wyswietla jeden quiz
+    // wyswietlanie quizu po id quizu
     public function show($id)
     {
-        // czy quiz istnieje
-        if (!isset($this->quizzes[$id])) {
-            abort(404);
-        }
-
-        $quiz = $this->quizzes[$id];
+        $quiz = Quiz::with('questions')->findOrFail($id);
 
         return view('quiz', ['quiz' => $quiz]);
     }

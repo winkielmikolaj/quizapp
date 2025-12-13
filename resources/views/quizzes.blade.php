@@ -8,9 +8,11 @@
     <ul>
         @foreach($quizzes as $quiz)
             <li style="margin-bottom: 10px;">
-                <strong>{{ $quiz['title'] }}</strong>
+                {{-- Zmiana ['title'] na ->title --}}
+                <strong>{{ $quiz->title }}</strong>
                 <br>
-                <a href="/quizzes/{{ $quiz['id'] }}">Rozwiąż ten quiz -></a>
+                {{-- Zmiana ['id'] na ->id --}}
+                <a href="/quizzes/{{ $quiz->id }}">Rozwiąż ten quiz -></a>
             </li>
         @endforeach
     </ul>
