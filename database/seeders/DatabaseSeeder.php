@@ -10,14 +10,13 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Tworzymy Administratora
+        //tworzenie admina na twardo
         User::create([
             'name' => 'Administrator',
             'email' => 'admin@test.com',
-            'password' => Hash::make('password'), // Hasło musi być zahaszowane
+            'password' => Hash::make('password'),
         ]);
 
-        // 2. Uruchamiamy seeder quizów (który stworzyłeś wcześniej)
         $this->call([
             QuizSeeder::class,
         ]);

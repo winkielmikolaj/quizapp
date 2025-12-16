@@ -12,6 +12,8 @@
     </style>
 </head>
 <body>
+admin@test.com
+password
 <header>
     <nav>
         <a href="/">Strona Główna</a>

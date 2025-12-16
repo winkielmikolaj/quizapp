@@ -9,7 +9,6 @@ class QuizSeeder extends Seeder
 {
     public function run()
     {
-        // Quiz 1: Dodawanie
         $quiz1 = Quiz::create(['title' => 'Matematyka: Dodawanie']);
 
         $quiz1->questions()->createMany([
@@ -18,7 +17,6 @@ class QuizSeeder extends Seeder
             ['content' => 'Jaki jest wynik 100 + 0?', 'answer' => 100],
         ]);
 
-        // Quiz 2: Mnożenie
         $quiz2 = Quiz::create(['title' => 'Matematyka: Mnożenie']);
 
         $quiz2->questions()->createMany([

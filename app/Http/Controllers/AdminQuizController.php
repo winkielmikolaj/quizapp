@@ -7,40 +7,39 @@ use Illuminate\Http\Request;
 
 class AdminQuizController extends Controller
 {
-    // 1. Lista wszystkich quizów
     public function index()
     {
-        // Pobieramy quizy i od razu liczymy, ile mają pytań (withCount)
+        //pobieranie quizow i pobiera ile ma pytan (withCount)
         $quizzes = Quiz::withCount('questions')->get();
         return view('admin.quizzes.index', ['quizzes' => $quizzes]);
     }
 
-    // 2. Formularz dodawania nowego quizu
+    //formularz dodwania nowego quizu
     public function create()
     {
         return view('admin.quizzes.create');
     }
 
-    // 3. Zapisywanie nowego quizu w bazie
+    //zapisywanie nowego quizu w bazie danych
     public function store(Request $request)
     {
         $data = $request->validate([
             'title' => 'required|min:3|max:255',
         ]);
 
+        //eloquent tworzy nowy rekord w tabeli quizzes
         Quiz::create($data);
 
         return redirect()->route('quizzes.index')
             ->with('success', 'Quiz został pomyślnie dodany!');
     }
 
-    // 4. Formularz edycji istniejącego quizu
+    //edycja quizu
     public function edit(Quiz $quiz)
     {
         return view('admin.quizzes.edit', ['quiz' => $quiz]);
     }
 
-    // 5. Aktualizacja quizu w bazie
     public function update(Request $request, Quiz $quiz)
     {
         $data = $request->validate([
@@ -53,7 +52,6 @@ class AdminQuizController extends Controller
             ->with('success', 'Quiz został zaktualizowany!');
     }
 
-    // 6. Usuwanie quizu
     public function destroy(Quiz $quiz)
     {
         $quiz->delete();
