@@ -30,7 +30,7 @@
                 <td>{{ $quiz->title }}</td>
                 <td>{{ $quiz->questions_count }}</td>
                 <td>
-                    <a href="#" style="color: blue; margin-right: 10px;">Pytania</a> |
+                    <a href="{{ route('admin.quiz.questions', $quiz->id) }}" style="color: blue; margin-right: 10px;">Pytania</a>
 
                     <a href="{{ route('quizzes.edit', $quiz) }}" style="color: orange; margin-right: 10px;">Edytuj</a> |
 
